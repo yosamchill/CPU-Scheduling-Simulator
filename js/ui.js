@@ -1,5 +1,5 @@
 /* ============================================================
-   ui.js — User Interface Rendering Functions
+   ui.js — User Interface Rendering Functions (Paper Theme)
    ============================================================
    This file handles all DOM updates:
    - Algorithm selection grid
@@ -20,11 +20,11 @@
 function renderAlgoGrid() {
   var grid = document.getElementById('algoGrid');
   grid.innerHTML = ALGORITHMS.map(function (a) {
-    return '<div class="algo-card border border-gray-700 rounded-xl p-3 text-center '
+    return '<div class="algo-card border border-[#dfd8cb] rounded-lg p-3 text-center '
       + (a.id === selectedAlgo ? 'selected' : '')
       + '" onclick="selectAlgo(\'' + a.id + '\')" id="algo-' + a.id + '">'
-      + '<div class="text-sm font-semibold">' + a.name + '</div>'
-      + '<div class="text-[10px] text-gray-400 mt-1 leading-tight">' + a.desc + '</div>'
+      + '<div class="algo-title text-sm font-semibold text-[#1c1917]">' + a.name + '</div>'
+      + '<div class="text-[10px] text-[#78716c] mt-1 leading-tight font-mono">' + a.desc + '</div>'
       + '</div>';
   }).join('');
 }
@@ -92,14 +92,14 @@ function renderProcessTable() {
   var tbody = document.getElementById('processTable');
   tbody.innerHTML = processes.map(function (p, i) {
     var color = COLORS[i % COLORS.length];
-    return '<tr class="process-row border-b border-gray-800" id="prow-' + p.id + '">'
-      + '<td class="px-4 py-2"><div class="flex items-center gap-2">'
-      + '<span class="w-3 h-3 rounded-full" style="background:' + color + '"></span>'
-      + '<span class="font-medium">P' + p.id + '</span></div></td>'
-      + '<td class="px-4 py-2"><input type="number" min="0" max="100" value="' + p.arrival + '" onchange="processes[' + i + '].arrival=+this.value" class="input-field w-20 text-sm"/></td>'
-      + '<td class="px-4 py-2"><input type="number" min="1" max="100" value="' + p.burst + '" onchange="processes[' + i + '].burst=+this.value" class="input-field w-20 text-sm"/></td>'
-      + '<td class="px-4 py-2 pri-cell"><input type="number" min="0" max="100" value="' + p.priority + '" onchange="processes[' + i + '].priority=+this.value" class="input-field w-20 text-sm"/></td>'
-      + '<td class="px-4 py-2 text-center"><button onclick="removeProcess(' + p.id + ')" class="delete-btn">✕</button></td>'
+    return '<tr class="process-row border-b border-[#ede7db]" id="prow-' + p.id + '">'
+      + '<td class="px-4 py-2.5"><div class="flex items-center gap-2">'
+      + '<span class="w-3.5 h-3.5 rounded-full shadow-xs" style="background:' + color + '"></span>'
+      + '<span class="font-medium font-mono text-[#1c1917]">P' + p.id + '</span></div></td>'
+      + '<td class="px-4 py-2.5"><input type="number" min="0" max="100" value="' + p.arrival + '" onchange="processes[' + i + '].arrival=+this.value" class="input-field w-20 text-sm font-mono"/></td>'
+      + '<td class="px-4 py-2.5"><input type="number" min="1" max="100" value="' + p.burst + '" onchange="processes[' + i + '].burst=+this.value" class="input-field w-20 text-sm font-mono"/></td>'
+      + '<td class="px-4 py-2.5 pri-cell"><input type="number" min="0" max="100" value="' + p.priority + '" onchange="processes[' + i + '].priority=+this.value" class="input-field w-20 text-sm font-mono"/></td>'
+      + '<td class="px-4 py-2.5 text-center"><button onclick="removeProcess(' + p.id + ')" class="delete-btn" title="Delete process">✕</button></td>'
       + '</tr>';
   }).join('');
   updatePriorityVisibility();
@@ -157,19 +157,19 @@ function renderGanttSkeleton() {
 
   var html = '<div class="relative" style="height:76px; margin-top:24px; min-width:' + (total * scale + 20) + 'px;">';
 
-  // Time markers along the top
+  // Time markers along the top (ruler numbers)
   for (var t = 0; t <= total; t++) {
-    html += '<div class="absolute text-[10px] text-gray-500" style="left:' + (t * scale) + 'px; top:-18px; transform:translateX(-50%)">' + t + '</div>';
+    html += '<div class="absolute text-[10px] font-mono text-[#78716c]" style="left:' + (t * scale) + 'px; top:-18px; transform:translateX(-50%)">' + t + '</div>';
   }
 
-  // Vertical grid lines
+  // Vertical grid lines (pencil ledger lines)
   for (var t = 0; t <= total; t++) {
-    html += '<div class="absolute" style="left:' + (t * scale) + 'px; top:0; width:1px; height:48px; background:#374151; opacity:0.2;"></div>';
+    html += '<div class="absolute" style="left:' + (t * scale) + 'px; top:0; width:1px; height:48px; background:#dfd8cb; opacity:0.8;"></div>';
   }
 
-  // The red playhead cursor (moves during animation)
-  html += '<div id="playhead" class="absolute playhead-glow" style="left:0; top:-4px; width:2px; height:56px; background:#ef4444; border-radius:2px; transition: left 0.3s ease; z-index:20;">'
-    + '<div style="position:absolute;top:-8px;left:-4px;width:10px;height:10px;border-radius:50%;background:#ef4444;"></div>'
+  // The red playhead cursor (red ink needle with circular pin bead)
+  html += '<div id="playhead" class="absolute playhead-glow" style="left:0; top:-4px; width:2px; height:56px; background:#dc2626; border-radius:2px; transition: left 0.3s ease; z-index:20;">'
+    + '<div style="position:absolute;top:-7px;left:-4px;width:10px;height:10px;border-radius:50%;background:#dc2626;border:1.5px solid #ffffff;box-shadow:0 1px 3px rgba(0,0,0,0.25);"></div>'
     + '</div>';
 
   // Container for the animated blocks
@@ -207,15 +207,18 @@ function renderFrame(t) {
     var w = (visEnd - g.start) * scale;
     var left = g.start * scale;
     var pIdx = processes.findIndex(function (p) { return p.id === g.pid; });
-    var color = g.pid === 'idle' ? '#374151' : COLORS[pIdx % COLORS.length];
-    var label = g.pid === 'idle' ? 'idle' : 'P' + g.pid;
-    var isActive = g.start <= t && g.end > t && g.pid !== 'idle';
+    var isIdle = g.pid === 'idle';
+    var color = isIdle ? '#eee8dc' : COLORS[pIdx % COLORS.length];
+    var textColor = isIdle ? '#78716c' : '#ffffff';
+    var label = isIdle ? 'idle' : 'P' + g.pid;
+    var isActive = g.start <= t && g.end > t && !isIdle;
 
-    bhtml += '<div class="gantt-block tooltip absolute rounded-lg flex items-center justify-center text-xs font-bold"'
+    bhtml += '<div class="gantt-block tooltip absolute rounded flex items-center justify-center text-xs font-bold font-mono"'
       + ' style="left:' + left + 'px; width:' + Math.max(w, 2) + 'px; height:40px; top:0;'
-      + ' background:' + color + '; color:' + (g.pid === 'idle' ? '#9ca3af' : '#fff') + ';'
-      + ' opacity:' + (g.pid === 'idle' ? 0.35 : isActive ? 1 : 0.8) + ';'
-      + (isActive ? ' box-shadow:0 0 12px ' + color + ';' : '')
+      + ' background:' + color + '; color:' + textColor + ';'
+      + ' border: 1px solid ' + (isIdle ? '#dfd8cb' : 'rgba(0,0,0,0.12)') + ';'
+      + ' opacity:' + (isIdle ? 0.75 : 1) + ';'
+      + (isActive ? ' box-shadow: 0 0 0 2px #1c1917, 0 4px 8px rgba(0,0,0,0.15); z-index:10;' : '')
       + ' transition: width 0.3s ease, opacity 0.3s ease;">'
       + (w > 24 ? label : '')
       + '<span class="tip">' + label + ' (' + g.start + '→' + g.end + ')</span>'
@@ -227,29 +230,30 @@ function renderFrame(t) {
   var cpuDot = document.getElementById('cpuDot');
   var cpuLabel = document.getElementById('cpuLabel');
   if (frame.running === 'idle') {
-    cpuDot.style.background = '#6b7280';
-    cpuDot.className = 'w-3 h-3 rounded-full';
+    cpuDot.style.background = '#a8a29e';
+    cpuDot.className = 'w-3.5 h-3.5 rounded-full shadow-xs';
     cpuLabel.textContent = 'Idle';
-    cpuLabel.style.color = '#9ca3af';
+    cpuLabel.style.color = '#78716c';
   } else {
     var idx = processes.findIndex(function (p) { return p.id === frame.running; });
-    cpuDot.style.background = COLORS[idx % COLORS.length];
-    cpuDot.className = 'w-3 h-3 rounded-full pulse-dot';
+    var c = COLORS[idx % COLORS.length];
+    cpuDot.style.background = c;
+    cpuDot.className = 'w-3.5 h-3.5 rounded-full pulse-dot shadow-xs';
     cpuLabel.textContent = 'Running P' + frame.running;
-    cpuLabel.style.color = COLORS[idx % COLORS.length];
+    cpuLabel.style.color = c;
   }
 
   // ---- Ready Queue Pills ----
   var rqDiv = document.getElementById('readyQueueLive');
   if (frame.ready.length === 0) {
-    rqDiv.innerHTML = '<span class="text-xs text-gray-400">' +
+    rqDiv.innerHTML = '<span class="text-xs text-[#78716c] font-mono">' +
       (frame.running === 'idle' ? 'No processes in queue' : 'Queue empty — CPU busy') +
       '</span>';
   } else {
     rqDiv.innerHTML = frame.ready.map(function (pid) {
       var idx = processes.findIndex(function (p) { return p.id === pid; });
       var c = COLORS[idx % COLORS.length];
-      return '<span class="ready-queue-pill pop-in" style="background:' + c + '22; color:' + c + ';">P' + pid + '</span>';
+      return '<span class="ready-queue-pill pop-in" style="background:' + c + '15; color:' + c + '; border: 1px solid ' + c + '55;">P' + pid + '</span>';
     }).join('');
   }
 
@@ -301,14 +305,14 @@ function renderFrame(t) {
       ? '<span class="pulse-dot" style="display:inline-block;width:6px;height:6px;border-radius:50%;background:currentColor;"></span>'
       : '';
 
-    return '<tr class="process-row border-b border-gray-800 ' + (isRunning ? 'running-row' : '') + '">'
-      + '<td class="px-4 py-2"><div class="flex items-center gap-2">'
-      + '<span class="w-3 h-3 rounded-full ' + (isRunning ? 'pulse-dot' : '') + '" style="background:' + c + '"></span>'
-      + '<span class="font-medium">P' + p.id + '</span></div></td>'
-      + '<td class="px-4 py-2"><span class="state-badge ' + stateClass + '">' + dotHtml + state + '</span></td>'
-      + '<td class="px-4 py-2 font-mono">' + rem + '</td>'
-      + '<td class="px-4 py-2 font-mono text-blue-400">' + (p.arrival <= t ? waitSoFar : '—') + '</td>'
-      + '<td class="px-4 py-2 font-mono text-yellow-400">' + respTime + '</td>'
+    return '<tr class="process-row border-b border-[#ede7db] ' + (isRunning ? 'running-row' : '') + '">'
+      + '<td class="px-4 py-2.5"><div class="flex items-center gap-2">'
+      + '<span class="w-3.5 h-3.5 rounded-full shadow-xs ' + (isRunning ? 'pulse-dot' : '') + '" style="background:' + c + '"></span>'
+      + '<span class="font-medium font-mono text-[#1c1917]">P' + p.id + '</span></div></td>'
+      + '<td class="px-4 py-2.5"><span class="state-badge ' + stateClass + '">' + dotHtml + state + '</span></td>'
+      + '<td class="px-4 py-2.5 font-mono text-[#1c1917]">' + rem + '</td>'
+      + '<td class="px-4 py-2.5 font-mono font-semibold text-blue-700">' + (p.arrival <= t ? waitSoFar : '—') + '</td>'
+      + '<td class="px-4 py-2.5 font-mono font-semibold text-amber-700">' + respTime + '</td>'
       + '</tr>';
   }).join('');
 
@@ -361,4 +365,3 @@ function updateLiveStats(t, total) {
     }
   }
 }
-

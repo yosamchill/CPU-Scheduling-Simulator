@@ -1,14 +1,14 @@
 /* ============================================================
-   config.js — Constants and Configuration
+   config.js — Constants and Configuration (Paper Theme)
    ============================================================
    This file defines:
    - The list of supported scheduling algorithms
-   - Color palette for processes
+   - Rich fountain pen / ink color palette for processes
    - Global application state variables
    ============================================================ */
 
 // All 6 scheduling algorithms supported by this simulator
-const ALGORITHMS = [
+var ALGORITHMS = [
   { id: 'fcfs',      name: 'FCFS',          desc: 'First Come First Served' },
   { id: 'sjf',       name: 'SJF',           desc: 'Shortest Job First' },
   { id: 'srtf',      name: 'SRTF',          desc: 'Shortest Remaining Time' },
@@ -17,29 +17,29 @@ const ALGORITHMS = [
   { id: 'priorityp', name: 'Priority (P)',  desc: 'Priority Preemptive' },
 ];
 
-// Colors assigned to processes (P1 = color[0], P2 = color[1], ...)
-const COLORS = [
-  '#6366f1', // indigo
-  '#22c55e', // green
-  '#eab308', // yellow
-  '#a855f7', // purple
-  '#06b6d4', // cyan
-  '#f97316', // orange
-  '#e879f9', // pink
-  '#fb923c', // light orange
-  '#34d399', // emerald
-  '#60a5fa', // blue
-  '#f472b6', // rose
-  '#a78bfa', // violet
+// Rich fountain pen ink & stamp palette for processes on paper
+var COLORS = [
+  '#2563eb', // Fountain Pen Blue
+  '#059669', // Emerald Ink
+  '#d97706', // Warm Amber Ochre
+  '#7c3aed', // Royal Violet Ink
+  '#0891b2', // Deep Cyan / Peacock
+  '#ea580c', // Terracotta Orange
+  '#db2777', // Crimson Rose
+  '#4f46e5', // Deep Indigo
+  '#16a34a', // Forest Green
+  '#dc2626', // Scarlet Stamp Red
+  '#ca8a04', // Golden Ochre
+  '#9333ea', // Mulberry Purple
 ];
 
 // ---- Global State ----
-let processes = [];           // Array of process objects: { id, arrival, burst, priority }
-let selectedAlgo = 'fcfs';    // Currently selected algorithm ID
-let pidCounter = 1;           // Auto-incrementing process ID counter
+var processes = [];           // Array of process objects: { id, arrival, burst, priority }
+var selectedAlgo = 'fcfs';    // Currently selected algorithm ID
+var pidCounter = 1;           // Auto-incrementing process ID counter
 
 // Animation state object — tracks the entire playback
-let anim = {
+var anim = {
   playing: false,       // Is the animation currently playing?
   timer: null,          // setTimeout reference for the next frame
   speed: 1,             // Playback speed multiplier (0.5, 1, 2, 5)
@@ -51,4 +51,3 @@ let anim = {
   ps: [],               // Process state array from simulation
   finished: false,      // Has the simulation reached the end?
 };
-

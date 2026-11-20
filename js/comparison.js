@@ -1,10 +1,10 @@
 /* ============================================================
-   comparison.js — Compare All Algorithms Side by Side
+   comparison.js — Compare All Algorithms Side by Side (Paper Theme)
    ============================================================
    This file handles:
    - Running all 6 algorithms on the same process data
    - Building the comparison table
-   - Drawing the animated bar chart on a canvas
+   - Drawing the animated bar chart on a paper canvas
    ============================================================ */
 
 
@@ -48,21 +48,21 @@ function compareAll() {
     if (r.avgResponse < bestResp) bestResp = r.avgResponse;
   });
 
-  // Build comparison table rows (best values highlighted in green)
+  // Build comparison table rows (best values highlighted in green stamp style)
   var tbody = document.getElementById('cmpTable');
   tbody.innerHTML = ALGORITHMS.map(function (a) {
     var r = results[a.id];
-    var wBest = r.avgWait === bestWait ? 'font-bold text-green-400' : '';
-    var tBest = r.avgTAT === bestTAT ? 'font-bold text-green-400' : '';
-    var rBest = r.avgResponse === bestResp ? 'font-bold text-green-400' : '';
+    var wBest = r.avgWait === bestWait ? 'font-bold font-mono text-emerald-700 bg-emerald-50/50' : 'font-mono text-stone-700';
+    var tBest = r.avgTAT === bestTAT ? 'font-bold font-mono text-emerald-700 bg-emerald-50/50' : 'font-mono text-stone-700';
+    var rBest = r.avgResponse === bestResp ? 'font-bold font-mono text-emerald-700 bg-emerald-50/50' : 'font-mono text-stone-700';
 
-    return '<tr class="border-b border-gray-800">'
-      + '<td class="px-4 py-2 font-medium">' + a.name + '</td>'
-      + '<td class="px-4 py-2 ' + wBest + '">' + r.avgWait.toFixed(2) + '</td>'
-      + '<td class="px-4 py-2 ' + tBest + '">' + r.avgTAT.toFixed(2) + '</td>'
-      + '<td class="px-4 py-2 ' + rBest + '">' + r.avgResponse.toFixed(2) + '</td>'
-      + '<td class="px-4 py-2">' + r.throughput.toFixed(3) + '</td>'
-      + '<td class="px-4 py-2">' + r.cpuUtil.toFixed(1) + '%</td>'
+    return '<tr class="border-b border-[#ede7db] hover:bg-[#faf8f4]">'
+      + '<td class="px-4 py-2.5 font-medium font-mono text-[#1c1917]">' + a.name + '</td>'
+      + '<td class="px-4 py-2.5 ' + wBest + '">' + r.avgWait.toFixed(2) + '</td>'
+      + '<td class="px-4 py-2.5 ' + tBest + '">' + r.avgTAT.toFixed(2) + '</td>'
+      + '<td class="px-4 py-2.5 ' + rBest + '">' + r.avgResponse.toFixed(2) + '</td>'
+      + '<td class="px-4 py-2.5 font-mono text-stone-700">' + r.throughput.toFixed(3) + '</td>'
+      + '<td class="px-4 py-2.5 font-mono text-stone-700">' + r.cpuUtil.toFixed(1) + '%</td>'
       + '</tr>';
   }).join('');
 
@@ -91,8 +91,8 @@ function drawAnimatedBarChart(results) {
   var W = rect.width;
   var H = 260;
 
-  // Chart colors for the 3 metrics
-  var barColors = ['#60a5fa', '#34d399', '#fbbf24']; // blue, green, yellow
+  // Chart ink colors for the 3 metrics (Paper palette: Fountain Blue, Emerald Green, Amber Ochre)
+  var barColors = ['#2563eb', '#059669', '#d97706'];
 
   // The 3 metrics to compare
   var metrics = ['avgWait', 'avgTAT', 'avgResponse'];
@@ -101,8 +101,8 @@ function drawAnimatedBarChart(results) {
   var n = ALGORITHMS.length;              // 6 algorithms
   var groupW = (W - 80) / n;             // Width per algorithm group
   var barW = groupW / 4.5;               // Width of each bar
-  var chartTop = 30;
-  var chartBottom = H - 40;
+  var chartTop = 32;
+  var chartBottom = H - 42;
   var chartH = chartBottom - chartTop;
 
   // Find the maximum value for scaling
@@ -119,20 +119,20 @@ function drawAnimatedBarChart(results) {
   function draw() {
     ctx.clearRect(0, 0, W, H);
 
-    // Draw horizontal grid lines and Y-axis labels
+    // Draw horizontal grid lines and Y-axis labels (pencil ledger styling)
     for (var i = 0; i <= 4; i++) {
       var y = chartTop + (chartH / 4) * i;
-      ctx.strokeStyle = '#374151';
-      ctx.lineWidth = 0.5;
+      ctx.strokeStyle = '#dfd8cb';
+      ctx.lineWidth = 1;
       ctx.beginPath();
       ctx.moveTo(50, y);
       ctx.lineTo(W - 10, y);
       ctx.stroke();
 
-      ctx.fillStyle = '#9ca3af';
-      ctx.font = '10px sans-serif';
+      ctx.fillStyle = '#78716c';
+      ctx.font = '10px "Space Mono", monospace';
       ctx.textAlign = 'right';
-      ctx.fillText((maxVal * (1 - i / 4)).toFixed(1), 46, y + 3);
+      ctx.fillText((maxVal * (1 - i / 4)).toFixed(1), 44, y + 3.5);
     }
 
     // Easing function: cubic ease-out for smooth animation
@@ -147,9 +147,9 @@ function drawAnimatedBarChart(results) {
         var barH = (val / maxVal) * chartH * ease; // Animated height
         var x = groupX + (mi - 1) * (barW + 2);
 
-        // Draw rounded-top rectangle
+        // Draw clean rounded-top paper bar with subtle shadow
         ctx.fillStyle = barColors[mi];
-        ctx.globalAlpha = 0.85;
+        ctx.globalAlpha = 0.9;
         ctx.beginPath();
         var r = 3; // border radius
         ctx.moveTo(x - barW / 2 + r, chartBottom - barH);
@@ -158,25 +158,32 @@ function drawAnimatedBarChart(results) {
         ctx.arcTo(x - barW / 2, chartBottom, x - barW / 2, chartBottom - barH, 0);
         ctx.arcTo(x - barW / 2, chartBottom - barH, x + barW / 2, chartBottom - barH, r);
         ctx.fill();
+
+        // Subtle bar border
+        ctx.strokeStyle = 'rgba(0, 0, 0, 0.08)';
+        ctx.lineWidth = 1;
+        ctx.stroke();
         ctx.globalAlpha = 1;
       });
 
       // Algorithm name label below bars
-      ctx.fillStyle = '#e5e7eb';
-      ctx.font = '11px sans-serif';
+      ctx.fillStyle = '#1c1917';
+      ctx.font = '600 11px system-ui, sans-serif';
       ctx.textAlign = 'center';
-      ctx.fillText(algo.name, groupX, chartBottom + 16);
+      ctx.fillText(algo.name, groupX, chartBottom + 18);
     });
 
     // Draw legend at top right
-    var legendX = W - 240;
+    var legendX = W - 250;
     metricLabels.forEach(function (label, i) {
       ctx.fillStyle = barColors[i];
-      ctx.fillRect(legendX + i * 90, 8, 10, 10);
-      ctx.fillStyle = '#e5e7eb';
-      ctx.font = '10px sans-serif';
+      ctx.fillRect(legendX + i * 86, 8, 9, 9);
+      ctx.strokeStyle = 'rgba(0, 0, 0, 0.1)';
+      ctx.strokeRect(legendX + i * 86, 8, 9, 9);
+      ctx.fillStyle = '#57534e';
+      ctx.font = '10px "Space Mono", monospace';
       ctx.textAlign = 'left';
-      ctx.fillText(label, legendX + 14 + i * 90, 17);
+      ctx.fillText(label, legendX + 13 + i * 86, 16);
     });
 
     // Continue animation until progress reaches 1
@@ -188,4 +195,3 @@ function drawAnimatedBarChart(results) {
 
   draw();
 }
-

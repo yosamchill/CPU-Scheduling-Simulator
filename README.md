@@ -20,6 +20,7 @@ CPU-Scheduler/
 │
 ├── js/
 │   ├── config.js           ← Constants & global state variables
+│   ├── algorithms.js       ← Core CPU scheduling algorithms in JavaScript
 │   ├── ui.js               ← Renders the UI (tables, Gantt chart, states)
 │   ├── animation.js        ← Playback engine (play, pause, step, speed)
 │   ├── comparison.js       ← Compare all algorithms + bar chart
@@ -84,6 +85,11 @@ CPU-Scheduler/
   - Interactive CLI to run individual algorithms, input custom processes, or compare all 6 side-by-side
 
 ### `js/config.js`
+- Configuration, process colors (paper & fountain pen ink palette), and global state
+
+### `js/algorithms.js`
+- Full JavaScript implementations of all 6 CPU scheduling algorithms (FCFS, SJF, SRTF, Round Robin, Priority Non-Preemptive, Priority Preemptive)
+- Computes timeline snapshots, remaining burst tracking, and scheduling metrics for simulation and comparison
 
 ### `js/ui.js`
 - Renders the algorithm selection grid

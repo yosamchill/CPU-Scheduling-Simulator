@@ -201,7 +201,7 @@ function setSpeed(speed, btn) {
  */
 function onComplete() {
   var box = document.getElementById('confettiBox');
-  var confettiColors = ['#6366f1', '#22c55e', '#eab308', '#a855f7', '#06b6d4', '#f97316', '#ef4444', '#ec4899'];
+  var confettiColors = ['#2563eb', '#059669', '#d97706', '#7c3aed', '#0891b2', '#ea580c', '#dc2626', '#db2777'];
 
   var html = '';
   for (var i = 0; i < 40; i++) {

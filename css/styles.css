@@ -1,87 +1,133 @@
 /* ============================================================
-   styles.css — All styling for the CPU Scheduling Simulator
+   styles.css — Paper Theme for CPU Scheduling Simulator
    ============================================================
-   This file contains:
-   1. Base & Reset styles
-   2. Animations (keyframes)
-   3. Component styles (buttons, cards, inputs, badges)
-   4. Gantt chart styles
-   5. Utility classes
+   A warm, tactile paper & ink aesthetic:
+   1. Typography & Grid Background (Engineering Graph Paper)
+   2. Animations
+   3. Tactile Components (Cards, Buttons, Inputs, Badges)
+   4. Gantt Chart & Ruler Styling
+   5. Utility Classes
    ============================================================ */
 
+@import url('https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,500;0,600;0,700;1,400&family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Space+Mono:ital,wght@0,400;0,700;1,400&display=swap');
 
-/* -------------------- 1. BASE STYLES -------------------- */
+/* -------------------- 1. BASE & PAPER BACKGROUND -------------------- */
+
+:root {
+  --font-serif: 'Lora', Georgia, 'Times New Roman', serif;
+  --font-sans: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+  --font-mono: 'Space Mono', 'Courier New', monospace;
+
+  --paper-bg: #f7f5ef;
+  --paper-grid: #eae4d6;
+  --paper-surface: #ffffff;
+  --paper-border: #dfd8cb;
+  --paper-border-muted: #ece7db;
+  --ink-primary: #1c1917;
+  --ink-secondary: #57534e;
+  --ink-muted: #78716c;
+  --ink-accent: #2563eb;
+  --ink-accent-hover: #1d4ed8;
+  --ink-danger: #dc2626;
+  --ink-success: #15803d;
+}
 
 * {
   box-sizing: border-box;
 }
 
 body {
-  font-family: system-ui, -apple-system, sans-serif;
+  font-family: var(--font-sans);
+  background-color: var(--paper-bg);
+  background-image:
+    linear-gradient(to right, var(--paper-grid) 1px, transparent 1px),
+    linear-gradient(to bottom, var(--paper-grid) 1px, transparent 1px);
+  background-size: 20px 20px;
+  color: var(--ink-primary);
+  min-height: 100vh;
 }
 
-/* Section titles used throughout the page */
+/* Serif font utility */
+.font-serif {
+  font-family: var(--font-serif);
+}
+
+/* Monospace font utility */
+.font-mono {
+  font-family: var(--font-mono);
+}
+
+/* Section titles with subtle typewriter / ledger header style */
 .section-title {
-  font-size: 0.75rem;        /* 12px */
-  font-weight: 600;
-  color: #9ca3af;            /* gray-400 */
+  font-family: var(--font-mono);
+  font-size: 0.72rem;        /* ~11.5px */
+  font-weight: 700;
+  color: var(--ink-muted);
   text-transform: uppercase;
-  letter-spacing: 0.05em;
+  letter-spacing: 0.08em;
   margin-bottom: 0.5rem;
+  display: flex;
+  align-items: center;
+  gap: 6px;
 }
 
-/* Small label text (used in stats cards, etc.) */
+.section-title::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: var(--paper-border-muted);
+  display: inline-block;
+}
+
+/* Small label text (stats cards, controls) */
 .label-text {
+  font-family: var(--font-mono);
   font-size: 10px;
-  color: #9ca3af;
+  color: var(--ink-muted);
   text-transform: uppercase;
-  letter-spacing: 0.05em;
+  letter-spacing: 0.06em;
+  font-weight: 600;
 }
 
 
 /* -------------------- 2. ANIMATIONS -------------------- */
 
-/* Fade in from below — used when results appear */
 @keyframes fadeIn {
-  from { opacity: 0; transform: translateY(8px); }
+  from { opacity: 0; transform: translateY(6px); }
   to   { opacity: 1; transform: translateY(0); }
 }
 .fade-in {
-  animation: fadeIn 0.35s ease forwards;
+  animation: fadeIn 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 
-/* Pop in with a bounce — used for ready queue pills */
 @keyframes popIn {
-  0%   { transform: scale(0.3); opacity: 0; }
-  60%  { transform: scale(1.1); }
+  0%   { transform: scale(0.6); opacity: 0; }
+  70%  { transform: scale(1.05); }
   100% { transform: scale(1); opacity: 1; }
 }
 .pop-in {
-  animation: popIn 0.35s ease forwards;
+  animation: popIn 0.25s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
 }
 
-/* Pulsing opacity — used for the "running" indicator dot */
 @keyframes pulse {
-  0%, 100% { opacity: 1; }
-  50%      { opacity: 0.4; }
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50%      { opacity: 0.35; transform: scale(0.92); }
 }
 .pulse-dot {
-  animation: pulse 1s ease-in-out infinite;
+  animation: pulse 1.2s ease-in-out infinite;
 }
 
-/* Playhead glow — alternating opacity on the red time cursor */
-@keyframes playhead {
-  from { opacity: 0.6; }
+@keyframes playheadPulse {
+  from { opacity: 0.75; }
   to   { opacity: 1; }
 }
 .playhead-glow {
-  animation: playhead 0.6s ease-in-out infinite alternate;
+  animation: playheadPulse 0.5s ease-in-out infinite alternate;
 }
 
-/* Confetti particles — fly upward and fade */
 @keyframes confetti {
   0%   { transform: translateY(0) rotate(0deg); opacity: 1; }
-  100% { transform: translateY(-120px) rotate(720deg); opacity: 0; }
+  100% { transform: translateY(-110px) rotate(640deg); opacity: 0; }
 }
 .confetti-particle {
   animation: confetti 1.2s ease-out forwards;
@@ -92,189 +138,261 @@ body {
 
 /* -------------------- 3. COMPONENT STYLES -------------------- */
 
-/* --- Cards --- */
+/* --- Paper Cards --- */
 .card {
-  background: #111827;       /* gray-900 */
-  border: 1px solid #1f2937; /* gray-800 */
-  border-radius: 12px;
+  background: var(--paper-surface);
+  border: 1px solid var(--paper-border);
+  border-radius: 8px;
+  box-shadow: 0 1px 3px rgba(38, 33, 26, 0.04), 0 3px 8px rgba(38, 33, 26, 0.02);
 }
 
 .stat-card {
-  background: #111827;
-  border: 1px solid #1f2937;
-  border-radius: 10px;
-  padding: 14px 18px;
-  transition: all 0.3s ease;
+  background: var(--paper-surface);
+  border: 1px solid var(--paper-border);
+  border-radius: 8px;
+  padding: 12px 16px;
+  box-shadow: 0 1px 2px rgba(38, 33, 26, 0.03);
+  transition: all 0.25s ease;
 }
 
 .stat-card.highlight {
-  box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.4); /* indigo glow */
+  box-shadow: 0 0 0 2px #d97706, 0 4px 12px rgba(217, 119, 6, 0.18);
+  border-color: #d97706;
+}
+
+/* Paper Edition badge */
+.paper-badge {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  color: var(--ink-secondary);
+  background: #f5f1e8;
+  border: 1px solid var(--paper-border);
+  border-radius: 4px;
+  padding: 2px 7px;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
 }
 
 /* --- Algorithm Selection Cards --- */
 .algo-card {
-  transition: all 0.2s ease;
+  background: var(--paper-surface);
+  border: 1px solid var(--paper-border);
+  border-radius: 8px;
+  transition: all 0.18s cubic-bezier(0.16, 1, 0.3, 1);
   cursor: pointer;
+  box-shadow: 0 1px 2px rgba(38, 33, 26, 0.03);
 }
 
 .algo-card:hover {
   transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  border-color: #beb3a0;
+  box-shadow: 0 4px 10px rgba(38, 33, 26, 0.07);
 }
 
 .algo-card.selected {
-  border-color: #6366f1 !important;             /* indigo-500 */
-  background: rgba(99, 102, 241, 0.08);
+  border-color: var(--ink-accent) !important;
+  background: #f0f7ff;
+  box-shadow: 0 0 0 1px var(--ink-accent), 0 2px 6px rgba(37, 99, 235, 0.12);
+}
+
+.algo-card.selected .algo-title {
+  color: #1e40af;
 }
 
 /* --- Buttons --- */
 .btn-primary {
-  background: #6366f1;
-  color: white;
-  border: none;
-  border-radius: 8px;
+  background: var(--ink-primary);
+  color: #ffffff;
+  border: 1px solid #141210;
+  border-radius: 6px;
   padding: 8px 18px;
   cursor: pointer;
   font-weight: 600;
+  font-size: 13px;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.12), 0 2px 4px rgba(0, 0, 0, 0.06);
   transition: all 0.15s ease;
 }
-.btn-primary:hover { filter: brightness(1.1); }
-.btn-primary:active { transform: scale(0.97); }
+.btn-primary:hover {
+  background: #2d2926;
+  border-color: #1f1b18;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.14);
+}
+.btn-primary:active {
+  transform: translateY(1px);
+  box-shadow: 0 1px 1px rgba(0, 0, 0, 0.1);
+}
 
 .btn-secondary {
-  background: #1f2937;
-  color: #e5e7eb;
-  border: 1px solid #374151;
-  border-radius: 8px;
+  background: var(--paper-surface);
+  color: var(--ink-primary);
+  border: 1px solid var(--paper-border);
+  border-radius: 6px;
   padding: 8px 18px;
   cursor: pointer;
-  font-weight: 500;
+  font-weight: 600;
+  font-size: 13px;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
   transition: all 0.15s ease;
 }
-.btn-secondary:hover { background: #374151; }
+.btn-secondary:hover {
+  background: #f6f3eb;
+  border-color: #c7beae;
+}
+.btn-secondary:active {
+  transform: translateY(1px);
+}
 
 .btn-danger {
-  background: transparent;
-  color: #ef4444;
-  border: 1px solid #ef4444;
-  border-radius: 8px;
+  background: var(--paper-surface);
+  color: var(--ink-danger);
+  border: 1px solid #fca5a5;
+  border-radius: 6px;
   padding: 6px 14px;
   cursor: pointer;
-  font-weight: 500;
+  font-weight: 600;
   font-size: 12px;
+  box-shadow: 0 1px 2px rgba(220, 38, 38, 0.04);
   transition: all 0.15s ease;
 }
-.btn-danger:hover { background: rgba(239, 68, 68, 0.1); }
+.btn-danger:hover {
+  background: #fef2f2;
+  border-color: var(--ink-danger);
+}
+.btn-danger:active {
+  transform: translateY(1px);
+}
 
-/* Small icon buttons (playback controls) */
+/* Playback Control Buttons */
 .btn-icon {
-  background: #1f2937;
-  color: #e5e7eb;
-  border: 1px solid #374151;
-  border-radius: 8px;
+  background: var(--paper-surface);
+  color: var(--ink-primary);
+  border: 1px solid var(--paper-border);
+  border-radius: 6px;
   width: 36px;
   height: 36px;
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
   transition: all 0.15s ease;
-  font-size: 16px;
+  font-size: 15px;
 }
 .btn-icon:hover {
-  background: rgba(99, 102, 241, 0.1);
-  border-color: #6366f1;
+  background: #f0f7ff;
+  border-color: var(--ink-accent);
+  color: var(--ink-accent);
 }
 .btn-icon.active {
-  background: #6366f1;
-  color: white;
-  border-color: #6366f1;
+  background: var(--ink-primary);
+  color: #ffffff;
+  border-color: var(--ink-primary);
 }
 
 /* Speed selector buttons */
 .speed-btn {
+  font-family: var(--font-mono);
   font-size: 11px;
   padding: 3px 8px;
-  border-radius: 6px;
-  border: 1px solid #374151;
-  background: #1f2937;
-  color: #e5e7eb;
+  border-radius: 4px;
+  border: 1px solid var(--paper-border);
+  background: #fbf9f4;
+  color: var(--ink-secondary);
   cursor: pointer;
   transition: all 0.15s;
 }
-.speed-btn:hover { border-color: #6366f1; }
+.speed-btn:hover {
+  border-color: var(--ink-accent);
+  color: var(--ink-accent);
+}
 .speed-btn.active {
-  background: #6366f1;
-  color: white;
-  border-color: #6366f1;
+  background: var(--ink-primary);
+  color: #ffffff;
+  border-color: var(--ink-primary);
 }
 
 /* --- Input Fields --- */
 .input-field {
-  background: #1f2937;
-  border: 1px solid #374151;
-  color: #e5e7eb;
-  border-radius: 6px;
-  padding: 6px 10px;
+  background: #faf8f4;
+  border: 1px solid var(--paper-border);
+  color: var(--ink-primary);
+  border-radius: 5px;
+  padding: 5px 8px;
   width: 100%;
   outline: none;
+  font-family: var(--font-mono);
+  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.03);
+  transition: border-color 0.15s, box-shadow 0.15s, background-color 0.15s;
 }
-.input-field:focus { border-color: #6366f1; }
+.input-field:focus {
+  background: #ffffff;
+  border-color: var(--ink-accent);
+  box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.15);
+}
 
-/* --- Process Table Rows --- */
+/* --- Table Styles --- */
 .process-row {
-  transition: all 0.2s ease;
+  transition: background-color 0.15s ease;
 }
 .process-row:hover {
-  background: rgba(99, 102, 241, 0.05);
+  background: #faf7f0;
 }
 .process-row.running-row {
-  background: rgba(34, 197, 94, 0.08);
+  background: #ecfdf5 !important;
 }
 
-/* --- State Badges (New, Ready, Running, Completed) --- */
+/* --- State Badges (Paper Tags & Stamps) --- */
 .state-badge {
-  padding: 2px 10px;
-  border-radius: 999px;
+  padding: 2px 8px;
+  border-radius: 4px;
   font-size: 11px;
-  font-weight: 600;
+  font-weight: 700;
+  font-family: var(--font-mono);
+  letter-spacing: 0.03em;
   display: inline-flex;
   align-items: center;
   gap: 4px;
-  transition: all 0.3s ease;
+  transition: all 0.25s ease;
 }
 
-.state-new       { background: rgba(156, 163, 175, 0.15); color: #9ca3af; }
-.state-ready     { background: rgba(234, 179, 8, 0.15);   color: #eab308; }
-.state-running   { background: rgba(34, 197, 94, 0.15);   color: #22c55e; }
-.state-completed { background: rgba(99, 102, 241, 0.15);  color: #818cf8; }
+.state-new       { background: #f3efe6; border: 1px solid #dcd5c7; color: #57534e; }
+.state-ready     { background: #fef3c7; border: 1px solid #fde047; color: #92400e; }
+.state-running   { background: #dcfce7; border: 1px solid #86efac; color: #166534; }
+.state-completed { background: #e0e7ff; border: 1px solid #a5b4fc; color: #3730a3; }
 
 /* --- Ready Queue Pills --- */
 .ready-queue-pill {
   display: inline-flex;
   align-items: center;
   gap: 4px;
-  padding: 4px 12px;
-  border-radius: 999px;
+  padding: 3px 10px;
+  border-radius: 4px;
   font-size: 12px;
-  font-weight: 600;
-  transition: all 0.3s ease;
-}
-
-
-/* -------------------- 4. GANTT CHART -------------------- */
-
-.gantt-block {
+  font-weight: 700;
+  font-family: var(--font-mono);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
   transition: all 0.25s ease;
 }
 
+
+/* -------------------- 4. GANTT CHART & TIMELINE -------------------- */
+
+.gantt-block {
+  border-radius: 4px;
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.06);
+  font-family: var(--font-mono);
+  transition: all 0.2s ease;
+}
+
 .gantt-block:hover {
-  filter: brightness(1.15);
-  transform: scaleY(1.1);
+  filter: brightness(1.08);
+  transform: translateY(-2px);
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.15);
   z-index: 10;
 }
 
-/* Tooltip (shown on hover over gantt blocks) */
+/* Tooltip (hover over gantt blocks) */
 .tooltip {
   position: relative;
 }
@@ -282,19 +400,21 @@ body {
 .tooltip .tip {
   visibility: hidden;
   opacity: 0;
-  transition: opacity 0.2s;
+  transition: opacity 0.15s ease;
   position: absolute;
-  bottom: 110%;
+  bottom: 115%;
   left: 50%;
   transform: translateX(-50%);
-  background: #e5e7eb;
-  color: #111827;
-  padding: 4px 10px;
-  border-radius: 6px;
-  font-size: 11px;
+  background: var(--ink-primary);
+  color: #fafaf9;
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 10.5px;
+  font-family: var(--font-mono);
   white-space: nowrap;
   z-index: 50;
   pointer-events: none;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
 }
 
 .tooltip:hover .tip {
@@ -302,22 +422,29 @@ body {
   opacity: 1;
 }
 
-
 /* -------------------- 5. DELETE BUTTON -------------------- */
 
 .delete-btn {
-  color: #ef4444;
+  color: #9ca3af;
   border: none;
   background: transparent;
-  border-radius: 8px;
-  width: 28px;
-  height: 28px;
-  font-size: 14px;
+  border-radius: 4px;
+  width: 26px;
+  height: 26px;
+  font-size: 13px;
   cursor: pointer;
-  transition: background 0.15s;
+  transition: all 0.15s ease;
 }
 
 .delete-btn:hover {
-  background: rgba(239, 68, 68, 0.1);
+  color: var(--ink-danger);
+  background: #fef2f2;
 }
 
+/* -------------------- 6. ACCENT RULERS & PROGRESS -------------------- */
+
+.ruler-track {
+  background: #eae4d6;
+  border: 1px solid var(--paper-border);
+  border-radius: 999px;
+}
