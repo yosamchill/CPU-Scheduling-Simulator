@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CPU Scheduling Simulator</title>
+
+  <!-- Tailwind CSS for utility styling -->
+  <script src="https://www.gstatic.com/antigravity/web/dev/tailwindcss.min.js"></script>
+
+  <!-- Our custom styles -->
+  <link rel="stylesheet" href="css/styles.css" />
+</head>
+
+<body class="bg-gray-950 text-gray-100 antialiased p-0 m-0">
+  <div class="max-w-5xl mx-auto p-6 space-y-6">
+
+    <!-- ==================== HEADER ==================== -->
+    <div class="flex items-center gap-3 pb-4 border-b border-gray-800">
+      <div class="w-10 h-10 rounded-xl bg-indigo-600 flex items-center justify-center text-white font-bold text-lg">⚙</div>
+      <div>
+        <h1 class="text-xl font-bold tracking-tight">CPU Scheduling Simulator</h1>
+        <p class="text-xs text-gray-400">Animated step-by-step visualization of scheduling algorithms</p>
+      </div>
+    </div>
+
+    <!-- ==================== ALGORITHM SELECTION ==================== -->
+    <div>
+      <h2 class="section-title">Select Algorithm</h2>
+      <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2" id="algoGrid">
+        <!-- Algorithm cards are rendered by js/ui.js -->
+      </div>
+
+      <!-- Round Robin quantum (shown only when RR is selected) -->
+      <div id="rrConfig" class="mt-3 hidden">
+        <label class="text-xs text-gray-400">Time Quantum</label>
+        <div class="flex items-center gap-2 mt-1">
+          <input type="number" id="quantum" value="2" min="1" max="20" class="input-field w-24 text-sm" />
+          <span class="text-xs text-gray-400">time units</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- ==================== PROCESS INPUT TABLE ==================== -->
+    <div>
+      <div class="flex items-center justify-between mb-3">
+        <h2 class="section-title">Processes</h2>
+        <div class="flex gap-2">
+          <button onclick="loadPreset()" class="btn-secondary text-xs px-3 py-1.5">📋 Example</button>
+          <button onclick="addProcess()" class="btn-primary text-xs px-3 py-1.5">+ Add Process</button>
+        </div>
+      </div>
+      <div class="card overflow-hidden">
+        <table class="w-full text-sm">
+          <thead>
+            <tr class="border-b border-gray-800 text-xs text-gray-400 uppercase tracking-wider">
+              <th class="text-left px-4 py-3">Process</th>
+              <th class="text-left px-4 py-3">Arrival Time</th>
+              <th class="text-left px-4 py-3">Burst Time</th>
+              <th class="text-left px-4 py-3" id="priHead">Priority</th>
+              <th class="text-center px-4 py-3 w-16"></th>
+            </tr>
+          </thead>
+          <tbody id="processTable">
+            <!-- Rows rendered by js/ui.js -->
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- ==================== ACTION BUTTONS ==================== -->
+    <div class="flex flex-wrap gap-3 items-center">
+      <button onclick="startSimulation()" class="btn-primary text-sm px-6 py-2.5">▶ Simulate</button>
+      <button onclick="compareAll()" class="btn-secondary text-sm px-5 py-2.5">📊 Compare All</button>
+      <button onclick="clearAll()" class="btn-danger text-sm px-4 py-2.5">Clear</button>
+    </div>
+
+    <!-- ==================== SIMULATION VIEW (hidden until run) ==================== -->
+    <div id="simView" class="hidden space-y-5 fade-in">
+
+      <!-- Playback Controls: Play, Pause, Step, Reset, Speed -->
+      <div class="flex items-center gap-3 p-3 card">
+        <button class="btn-icon" onclick="pbReset()" title="Reset">⏮</button>
+        <button class="btn-icon" onclick="pbStep()" title="Step Forward">⏭</button>
+        <button class="btn-icon active" id="pbPlay" onclick="pbToggle()" title="Play / Pause">▶</button>
+        <div class="flex-1 mx-3">
+          <div class="relative h-2 rounded-full bg-gray-800 overflow-hidden">
+            <div id="pbProgress" class="h-full rounded-full bg-indigo-500 transition-all duration-300" style="width:0%"></div>
+          </div>
+        </div>
+        <span id="pbTime" class="text-xs font-mono tabular-nums text-gray-400 w-20 text-right">t = 0</span>
+        <div class="flex gap-1 ml-2">
+          <button class="speed-btn" data-speed="0.5" onclick="setSpeed(0.5,this)">0.5×</button>
+          <button class="speed-btn active" data-speed="1" onclick="setSpeed(1,this)">1×</button>
+          <button class="speed-btn" data-speed="2" onclick="setSpeed(2,this)">2×</button>
+          <button class="speed-btn" data-speed="5" onclick="setSpeed(5,this)">5×</button>
+        </div>
+      </div>
+
+      <!-- CPU Status Indicator -->
+      <div class="flex items-center gap-4">
+        <div class="stat-card flex items-center gap-3 flex-1">
+          <div class="w-3 h-3 rounded-full bg-gray-500" id="cpuDot"></div>
+          <div>
+            <div class="label-text">CPU</div>
+            <div class="text-sm font-bold" id="cpuLabel">Idle</div>
+          </div>
+        </div>
+        <div class="stat-card flex-1 text-center">
+          <div class="label-text">Completed</div>
+          <div class="text-lg font-bold" id="completedCount">0 / 0</div>
+        </div>
+      </div>
+
+      <!-- Animated Gantt Chart -->
+      <div>
+        <h3 class="section-title">Gantt Chart</h3>
+        <div class="card p-5 overflow-x-auto">
+          <div id="ganttArea" class="relative" style="min-height:80px;"></div>
+        </div>
+      </div>
+
+      <!-- Live Ready Queue -->
+      <div>
+        <h3 class="section-title">Ready Queue</h3>
+        <div class="card p-4 min-h-[48px] flex items-center gap-2 flex-wrap" id="readyQueueLive">
+          <span class="text-xs text-gray-400">Waiting…</span>
+        </div>
+      </div>
+
+      <!-- Process State Table -->
+      <div>
+        <h3 class="section-title">Process States</h3>
+        <div class="card overflow-hidden">
+          <table class="w-full text-sm">
+            <thead>
+              <tr class="border-b border-gray-800 text-xs text-gray-400 uppercase tracking-wider">
+                <th class="text-left px-4 py-2">Process</th>
+                <th class="text-left px-4 py-2">State</th>
+                <th class="text-left px-4 py-2">Remaining</th>
+                <th class="text-left px-4 py-2">Wait Time</th>
+                <th class="text-left px-4 py-2">Response</th>
+              </tr>
+            </thead>
+            <tbody id="stateTable"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Live Statistics Cards -->
+      <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
+        <div class="stat-card"><div class="label-text">⏱ Avg Waiting</div><div class="text-xl font-bold text-blue-400" id="sWait">—</div></div>
+        <div class="stat-card"><div class="label-text">🔄 Avg Turnaround</div><div class="text-xl font-bold text-green-400" id="sTAT">—</div></div>
+        <div class="stat-card"><div class="label-text">⚡ Avg Response</div><div class="text-xl font-bold text-yellow-400" id="sResp">—</div></div>
+        <div class="stat-card"><div class="label-text">📈 CPU Utilization</div><div class="text-xl font-bold text-purple-400" id="sUtil">—</div></div>
+      </div>
+
+      <!-- Confetti container for completion celebration -->
+      <div id="confettiBox" class="relative h-0 overflow-visible"></div>
+    </div>
+
+    <!-- ==================== COMPARISON VIEW ==================== -->
+    <div id="comparison" class="hidden space-y-4 fade-in">
+      <h2 class="section-title">Algorithm Comparison</h2>
+      <div class="card p-5">
+        <canvas id="cmpCanvas" class="w-full" height="260"></canvas>
+      </div>
+      <div class="card overflow-hidden">
+        <table class="w-full text-sm">
+          <thead>
+            <tr class="border-b border-gray-800 text-xs text-gray-400 uppercase tracking-wider">
+              <th class="text-left px-4 py-3">Algorithm</th>
+              <th class="text-left px-4 py-3">Avg Wait</th>
+              <th class="text-left px-4 py-3">Avg Turnaround</th>
+              <th class="text-left px-4 py-3">Avg Response</th>
+              <th class="text-left px-4 py-3">Throughput</th>
+              <th class="text-left px-4 py-3">CPU Util %</th>
+            </tr>
+          </thead>
+          <tbody id="cmpTable"></tbody>
+        </table>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ==================== JAVASCRIPT FILES (loaded in order) ==================== -->
+  <!-- 1. Constants and configuration -->
+  <script src="js/config.js"></script>
+  <!-- 2. UI rendering functions -->
+  <script src="js/ui.js"></script>
+  <!-- 4. Animation / playback engine -->
+  <script src="js/animation.js"></script>
+  <!-- 5. Compare all algorithms feature -->
+  <script src="js/comparison.js"></script>
+  <!-- 6. Main app initialization -->
+  <script src="js/app.js"></script>
+</body>
+</html>
+
